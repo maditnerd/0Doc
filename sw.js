@@ -74,11 +74,16 @@ self.addEventListener('fetch',event => {
     }
     });
 
+
     const requestUrl = new URL(event.request.url);
+    
+    console.log(requestUrl.origin);
+    console.log(location.origin);
+    
     if(requestUrl.origin === location.origin){
         if(requestUrl.pathname === '/'){
             console.log("Loading cache");
-            
+
             event.respondWith(
                 caches.match('index.html').then(response => {
                     if (response){
