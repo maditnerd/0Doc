@@ -1,5 +1,5 @@
 var docTitle = "snos";
-var version = "12";
+var version = "13";
 
 //https://www.smashingmagazine.com/2016/02/making-a-service-worker/
 //Udacity : Google Developer Challenge
@@ -52,19 +52,51 @@ self.addEventListener('activate', event => {
 
 //Display page / errors
 self.addEventListener('fetch',event => {
-/*
+
+    caches.has(staticCacheName).then( response => {
+        if(!response){
+        console.log("Cache issue");
+        caches.open(staticCacheName).then(
+            cache => cache.addAll([
+                '0doc.js',
+                'index.html',
+                'favicon.ico',
+                'logo.png',
+                'style.css'
+            ]).then( 
+                _ => console.log(" ... Cache saved")
+            ).catch(
+                error => console.log("... Cache failed to save")
+            )
+        );
+    }else {
+        console.log("Cache OP");
+    }
+    });
+
     const requestUrl = new URL(event.request.url);
     if(requestUrl.origin === location.origin){
         if(requestUrl.pathname === '/'){
             console.log("Loading cache");
-            event.respondWith(caches.match('index.html'));
+            
+            event.respondWith(
+                caches.match('index.html').then(response => {
+                    if (response){
+                        console.log("Cache found!");
+                        return response;
+                    }
+                    console.log("Cache corrupted...");
+                    return fetch('index.html');
+                })
+            );
             return;
         }
     }
-*/
+
 
     event.respondWith(
         caches.match(event.request).then(response => {
+            console.log(event.request.url);
             // Fetch from Cache
             if (response) {
                 console.log(`[FETCH] [CACHE] Service worker -> ${event.request.url}`);
@@ -82,9 +114,6 @@ self.addEventListener('fetch',event => {
                 console.log(`[FETCH] [WEB] -> ${event.request.url}`);
                 return response;
             });       
-        }).catch(error => {
-            //Fetch failed
-            return new Response("[FETCH] - Unexpected Error:" + error);
         })
     );
 });
