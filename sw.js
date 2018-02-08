@@ -1,5 +1,5 @@
 var docTitle = "snos";
-var version = "13";
+var version = "14";
 
 //https://www.smashingmagazine.com/2016/02/making-a-service-worker/
 //Udacity : Google Developer Challenge
@@ -62,7 +62,10 @@ self.addEventListener('fetch',event => {
                 'index.html',
                 'favicon.ico',
                 'logo.png',
-                'style.css'
+                'style.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.5.0/jquery.mark.min.js'
             ]).then( 
                 _ => console.log(" ... Cache saved")
             ).catch(
