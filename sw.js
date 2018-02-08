@@ -77,11 +77,8 @@ self.addEventListener('fetch',event => {
 
     const requestUrl = new URL(event.request.url);
     
-    console.log(requestUrl.origin);
-    console.log(location.origin);
-    
-    if(requestUrl.origin === location.href){
-        if(requestUrl.pathname === '/'){
+    if(requestUrl.origin === location.origin){
+        if(requestUrl.href.slice(-1) === '/'){
             console.log("Loading cache");
 
             event.respondWith(
@@ -95,6 +92,9 @@ self.addEventListener('fetch',event => {
                 })
             );
             return;
+        } else {
+            console.log("ERROR")
+            console.log(requestUrl.pathname);
         }
     }
 
