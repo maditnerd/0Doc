@@ -213,15 +213,33 @@
 
     // Service Worker
     if (navigator.serviceWorker){
-        navigator.serviceWorker.register('sw.js').then(function() {
-            console.log("Registration worked.");
+        navigator.serviceWorker.register('sw.js').then(function(reg) {
+            console.log("[REGISTER] Service worker");
+
+            if(reg.waiting){
+                console.log("[REGISTER] Waiting!");
+            }
+
+            if(reg.installing){
+                console.log("[REGISTER] Installing!");
+            }
+
+            reg.addEventListener('updatefound', () => {
+                console.log("Update founded!");
+            });
+
+            navigator.serviceWorker.addEventListener('controllerchange', function() {
+                console.log("ControllerChange")
+                window.location.reload();
+              });
+
         }).catch(function(){
-            console.log("Registration failed");
+            console.log("[REGISTER] Service worker failed.");
         });
         
         
     } else {
-        console.log("Service Worker unavailable.");
+        console.log("[REGISTER] Service Worker is not compatible with your browser.");
     }
 
 })();

@@ -1,18 +1,13 @@
 var docTitle = "snos";
-var version = "2";
+var version = "12";
 
 //https://www.smashingmagazine.com/2016/02/making-a-service-worker/
 //Udacity : Google Developer Challenge
-staticCacheName = `${docTitle}-static-dev-${version}`;
-contentImgsCache = `${docTitle}-content-imgs`;
-const allCaches = [
-  staticCacheName,
-  contentImgsCache
-];
+staticCacheName = `${docTitle}-${version}`;
 
 //Install cache
 self.addEventListener('install', event => {
-    console.log("... Download content in cache for later use");
+    console.log("[INSTALL] Service worker");
     event.waitUntil(
         caches.open(staticCacheName).then(
             cache => cache.addAll([
@@ -20,29 +15,37 @@ self.addEventListener('install', event => {
                 'index.html',
                 'favicon.ico',
                 'logo.png',
-                'style.css',
-                'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js'
+                'style.css'
             ]).then( 
-                _ => console.log("Cache OP")
+                _ => console.log(" ... Cache saved")
             ).catch(
-                error => console.log("Cache Error")
+                error => console.log("... Cache failed to save")
             )
-        )
+        ).then( () => {
+            console.log(" ... Skip Waiting");
+            self.skipWaiting();
+        })
     );
 });
 
 //Activate new cache
 self.addEventListener('activate', event => {
-    console.log("... Cache is ready");
+    console.log("... [ACTIVATE] Service worker");
     event.waitUntil(
       //Only remove cache that start with {docTitle}
         caches.keys().then(
             cacheNames => Promise.all(
               cacheNames.filter(
-                cacheName => cacheName.startsWith(docTitle) &&
-                             !allCaches.includes(cacheName)
-                ).map(cacheName => caches.delete(cacheName))
+                cacheName => {
+                    console.log(cacheName);
+                    return cacheName.startsWith(docTitle) &&
+                             !staticCacheName.includes(cacheName);
+                }).map(cacheName => caches.delete(cacheName))
             )
+        ).then(
+            _ => console.log(" ... cache cleaned")
+        ).catch(
+            error => console.log(" ... failed to clean cache")
         )
     );
 });
@@ -64,7 +67,7 @@ self.addEventListener('fetch',event => {
         caches.match(event.request).then(response => {
             // Fetch from Cache
             if (response) {
-                console.log(`CACHE: ${event.request.url}`);
+                console.log(`[FETCH] [CACHE] Service worker -> ${event.request.url}`);
                 return response;
             }
             return fetch(event.request).then(response => {
@@ -76,12 +79,12 @@ self.addEventListener('fetch',event => {
                     );
                 }
                 // Fetch from server
-                console.log(`SERVER: ${event.request.url}`);
+                console.log(`[FETCH] [WEB] -> ${event.request.url}`);
                 return response;
             });       
-        }).catch(function(){
+        }).catch(error => {
             //Fetch failed
-            return new Response("Unexpected Error: cannot fetch page");
+            return new Response("[FETCH] - Unexpected Error:" + error);
         })
     );
 });
