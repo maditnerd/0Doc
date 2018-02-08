@@ -1,5 +1,5 @@
 var docTitle = "snos";
-var version = "1";
+var version = "2";
 
 //https://www.smashingmagazine.com/2016/02/making-a-service-worker/
 //Udacity : Google Developer Challenge
@@ -16,16 +16,17 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(staticCacheName).then(
             cache => cache.addAll([
-                '/sw/register.js',
-                '/sw/getHTML.js',
-                '/sw/cache.html',
-                'search.js',
+                '0doc.js',
+                'index.html',
                 'favicon.ico',
                 'logo.png',
                 'style.css',
-                'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.5.0/jquery.mark.min.js'
-            ])
+                'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js'
+            ]).then( 
+                _ => console.log("Cache OP")
+            ).catch(
+                error => console.log("Cache Error")
+            )
         )
     );
 });
@@ -48,15 +49,16 @@ self.addEventListener('activate', event => {
 
 //Display page / errors
 self.addEventListener('fetch',event => {
-
+/*
     const requestUrl = new URL(event.request.url);
     if(requestUrl.origin === location.origin){
         if(requestUrl.pathname === '/'){
             console.log("Loading cache");
-            event.respondWith(caches.match('/sw/cache.html'));
+            event.respondWith(caches.match('index.html'));
             return;
         }
     }
+*/
 
     event.respondWith(
         caches.match(event.request).then(response => {
