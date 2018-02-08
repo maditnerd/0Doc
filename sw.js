@@ -80,7 +80,7 @@ self.addEventListener('fetch',event => {
     console.log(requestUrl.origin);
     console.log(location.origin);
     
-    if(requestUrl.origin === location.origin){
+    if(requestUrl.origin === location.href){
         if(requestUrl.pathname === '/'){
             console.log("Loading cache");
 
